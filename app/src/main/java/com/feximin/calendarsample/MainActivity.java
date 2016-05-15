@@ -15,14 +15,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final CalendarView calendar = (CalendarView) findViewById(R.id.calendar);
 
+        calendar.setDate(2016, mMonth, mDay);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                mDay++;
-                if (mDay > 31) mDay = 1;
-                if (mMonth > 11) mMonth = 0;
-                calendar.setDate(2016, mMonth, mDay);
-                calendar.setTitleText(mMonth + 1 + "月" + mDay + "日");
+                calendar.nextMonth();
+                calendar.autoFillTitle();
                 calendar.postDelayed(this, 2000);
             }
         };

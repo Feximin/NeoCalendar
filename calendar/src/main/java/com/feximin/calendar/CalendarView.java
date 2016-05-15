@@ -174,6 +174,12 @@ public class CalendarView extends LinearLayout {
             mCurMonth = 0;
             mCurYear++;
         }
+        refreshItem();
+    }
+
+    public void autoFillTitle(){
+        String title = String.format("%s年%s月%s日", mCurYear, mCurMonth + 1, mCurDay);
+        mTvTitle.setText(title);
     }
 
     public void previousMonth(){
@@ -183,20 +189,45 @@ public class CalendarView extends LinearLayout {
             mCurYear --;
             checkYear();
         }
+        refreshItem();
     }
 
     public void nextYear(){
         mCurYear ++;
+        refreshItem();
     }
+
 
     public void previousYear(){
         mCurYear --;
         checkYear();
+        refreshItem();
     }
 
     private void checkYear(){
         if(mCurYear < 0){
             throw new IllegalArgumentException("year can not be negative !!");
+        }
+    }
+
+    public void nextDay(){
+        mCurDay ++;
+        int dayCount = Tool.getDayCount(mCurMonth);
+        if (mCurDay > dayCount){
+            mCurDay = 1;
+            nextMonth();
+        }else{
+            setDate(mCurYear, mCurMonth, mCurDay);
+        }
+    }
+
+    public void previousDay(){
+        mCurDay --;
+        if (mCurDay == 0){
+            mCurDay = Tool.getDayCount(mCurMonth);
+            previousMonth();
+        }else{
+            setDate(mCurYear, mCurMonth, mCurDay);
         }
     }
 
@@ -256,17 +287,17 @@ public class CalendarView extends LinearLayout {
         mContentContainer.addView(ll, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
+    private Calendar mAssistCalendar = Calendar.getInstance();
     /**
      * 获取本月1号的时候是星期几
      * @return
      */
     private int getFirstDayWeekIndex(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, mCurYear);
-        calendar.set(Calendar.MONTH, mCurMonth);
-        calendar.set(Calendar.DATE, 1);
-        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-        int weekIndex = calendar.get(Calendar.DAY_OF_WEEK) - 1;         //为什么要减1
+        mAssistCalendar.set(Calendar.YEAR, mCurYear);
+        mAssistCalendar.set(Calendar.MONTH, mCurMonth);
+        mAssistCalendar.set(Calendar.DATE, 1);
+        mAssistCalendar.setFirstDayOfWeek(Calendar.SUNDAY);
+        int weekIndex = mAssistCalendar.get(Calendar.DAY_OF_WEEK) - 1;         //为什么要减1
         return weekIndex;
     }
 
@@ -327,12 +358,18 @@ public class CalendarView extends LinearLayout {
         if (refreshItem) refreshItem();
     }
 
-    public void showTitle(int visibility){
-
+    public void showTitle(boolean b){
+        if (b != mShowTitle){
+            mTvTitle.setVisibility(b?VISIBLE:GONE);
+            mShowTitle = b;
+        }
     }
 
-    public void showWeek(int visibility){
-
+    public void showWeek(boolean b){
+        if (b != mShowWeek){
+            mWeekContainer.setVisibility(b?VISIBLE:GONE);
+            mShowWeek = b;
+        }
     }
 
 }

@@ -24,7 +24,7 @@ public class CalendarView extends LinearLayout {
     private boolean mShowTitle = true;
     private boolean mShowWeek = true;
     private boolean mShowDivider = true;
-    private int mDividerColor = 0xFFAAAAAA;
+    private int mDividerColor = 0xFFCCCCCC;
     private int mDividerWidth;
 
     private float mItemRatio = 1;                 //每一天的内容的宽高比，默认是正方形的
@@ -266,7 +266,7 @@ public class CalendarView extends LinearLayout {
                 if (day > 0 && day <= dayCount){
                     View view = generateItemView(day);
                     view.setSelected(day == mCurDay);
-                    item.addView(view);
+                    item.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 }
             }
         }

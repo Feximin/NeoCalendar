@@ -163,6 +163,16 @@ public class CalendarView extends LinearLayout {
         }
     }
 
+    public void updateItem(int day, View view){
+        if (view != null){
+            RatioLinearLayout parent = getItemViewParent(day);
+            if (parent != null){
+                parent.removeAllViews();
+                parent.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            }
+        }
+    }
+
 
     public void setTitleText(String text){
         mTvTitle.setText(text);
@@ -231,8 +241,8 @@ public class CalendarView extends LinearLayout {
         }
     }
 
-    private void refreshItem(){
-        int weekIndex = getFirstDayWeekIndex();         //为什么要减1
+    protected void refreshItem(){
+        int weekIndex = Tool.getWeekIndex(mCurYear, mCurMonth, 1);         //为什么要减1
         int dayCount = Tool.getDayCount(mCurMonth);
         int rowCount = (dayCount + weekIndex) / 7;
         int mod = (dayCount + weekIndex) % 7;
@@ -265,8 +275,10 @@ public class CalendarView extends LinearLayout {
                 int day = index - weekIndex + 1;
                 if (day > 0 && day <= dayCount){
                     View view = generateItemView(day);
-                    view.setSelected(day == mCurDay);
-                    item.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                    if (view != null) {
+                        view.setSelected(day == mCurDay);
+                        item.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                    }
                 }
             }
         }
@@ -287,22 +299,8 @@ public class CalendarView extends LinearLayout {
         mContentContainer.addView(ll, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
-    private Calendar mAssistCalendar = Calendar.getInstance();
-    /**
-     * 获取本月1号的时候是星期几
-     * @return
-     */
-    private int getFirstDayWeekIndex(){
-        mAssistCalendar.set(Calendar.YEAR, mCurYear);
-        mAssistCalendar.set(Calendar.MONTH, mCurMonth);
-        mAssistCalendar.set(Calendar.DATE, 1);
-        mAssistCalendar.setFirstDayOfWeek(Calendar.SUNDAY);
-        int weekIndex = mAssistCalendar.get(Calendar.DAY_OF_WEEK) - 1;         //为什么要减1
-        return weekIndex;
-    }
-
     public int[] getPosition(int day){
-        int weekIndex = getFirstDayWeekIndex();
+        int weekIndex = Tool.getWeekIndex(mCurYear, mCurMonth, 1);
         int[] position = new int[2];
         int row = (day + weekIndex) / 7;
         int column = (day + weekIndex) % 7;
@@ -317,14 +315,20 @@ public class CalendarView extends LinearLayout {
         return position;
     }
 
-    public View getItemView(int day){
+    public RatioLinearLayout getItemViewParent(int day){
         int[] position = getPosition(day);
         LinearLayout row = (LinearLayout) mContentContainer.getChildAt(position[0]);
         if (row != null) {
             RatioLinearLayout item = (RatioLinearLayout) row.getChildAt(position[1]);
-            if (item != null){
-                return item.getChildAt(0);
-            }
+            return item;
+        }
+        return null;
+    }
+
+    public View getItemView(int day){
+        RatioLinearLayout item = getItemViewParent(day);
+        if (item != null){
+            return item.getChildAt(0);
         }
         return null;
     }

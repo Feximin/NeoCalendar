@@ -3,6 +3,8 @@ package com.feximin.calendar;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
+import java.util.Calendar;
+
 /**
  * Created by Neo on 16/5/14.
  */
@@ -66,5 +68,16 @@ public class Tool {
     public static int spToPx(Context context, float sp){
         sp *= getScreenScaleDensity(context);
         return (int) Math.ceil(sp);
+    }
+
+    //获取对应日期的星期
+    public static int getWeekIndex(int year, int month, int day){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DATE, day);
+        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+        int weekIndex = calendar.get(Calendar.DAY_OF_WEEK) - 1;         //为什么要减1
+        return weekIndex;
     }
 }
